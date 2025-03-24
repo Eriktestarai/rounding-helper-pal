@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -126,7 +125,7 @@ const Avrundningshjalpmedel = () => {
             setAntalFel(0);
             setElevSvar('');
             if (spellaege) {
-                setSpelTal((Math.random() * 10).toFixed(2));
+                generateRandomNumber();
             }
         } else {
             setAntalFel(prevAntalFel => prevAntalFel + 1);
@@ -141,10 +140,28 @@ const Avrundningshjalpmedel = () => {
         }
     };
 
+    const generateRandomNumber = () => {
+        if (avrundningstyp === "Hundradelar") {
+            // Generate a number with 3 decimal places when rounding to hundredths
+            const randomNum = (Math.random() * 10).toFixed(3);
+            setSpelTal(randomNum);
+        } else {
+            // For other rounding types, keep the existing behavior (2 decimal places)
+            setSpelTal((Math.random() * 10).toFixed(2));
+        }
+    };
+
+    // Update the number when avrundningstyp changes in game mode
+    useEffect(() => {
+        if (spellaege) {
+            generateRandomNumber();
+        }
+    }, [avrundningstyp, spellaege]);
+
     const startaSpel = () => {
         if (!spellaege) {
             setSpellaege(true);
-            setSpelTal((Math.random() * 10).toFixed(2));
+            generateRandomNumber();
             setFeedback('');
             setElevSvar('');
             setAntalFel(0);
