@@ -32,15 +32,6 @@ const Index = () => {
           Matematikhjälpmedel
         </motion.h1>
 
-        <motion.p 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-xl text-gray-600 max-w-2xl mx-auto"
-        >
-          Ett elegant verktyg för att träna på matematisk avrundning, utformat med inspiration från minimalistisk designfilosofi.
-        </motion.p>
-
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
