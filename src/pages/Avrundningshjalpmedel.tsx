@@ -5,6 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
+import { Slider } from '@/components/ui/slider';
 
 const Avrundningshjalpmedel = () => {
     const [tal, setTal] = useState<string>('0');
@@ -77,7 +79,6 @@ const Avrundningshjalpmedel = () => {
                     ctx.fillText(tickFormat(i), x, canvas.height / 2 + 25);
                 }
 
-                // Rita de små ticksen
                 const canvasLitenTickSpacing = canvasWidth / totalSpan * litenTickSpacing;
                 for (let i = minVarde; i <= maxVarde; i += litenTickSpacing) {
                     const x = (i - minVarde) * (canvasWidth / totalSpan);
@@ -88,7 +89,6 @@ const Avrundningshjalpmedel = () => {
                     ctx.stroke();
                 }
 
-                // Markera talet
                 const talX = (talNummer - minVarde) * (canvasWidth / totalSpan);
                 ctx.beginPath();
                 ctx.arc(talX, canvas.height / 2, 6, 0, 2 * Math.PI);
@@ -142,16 +142,13 @@ const Avrundningshjalpmedel = () => {
 
     const generateRandomNumber = () => {
         if (avrundningstyp === "Hundradelar") {
-            // Generate a number with 3 decimal places when rounding to hundredths
             const randomNum = (Math.random() * 10).toFixed(3);
             setSpelTal(randomNum);
         } else {
-            // For other rounding types, keep the existing behavior (2 decimal places)
             setSpelTal((Math.random() * 10).toFixed(2));
         }
     };
 
-    // Update the number when avrundningstyp changes in game mode
     useEffect(() => {
         if (spellaege) {
             generateRandomNumber();
@@ -170,6 +167,90 @@ const Avrundningshjalpmedel = () => {
             setFeedback('');
             setElevSvar('');
             setAntalFel(0);
+        }
+    };
+
+    const ökaVärde = () => {
+        if (spellaege) {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaSpelTal = (parseFloat(spelTal) + steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaTal = (parseFloat(tal) + steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaVärde = () => {
+        if (spellaege) {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaSpelTal = (parseFloat(spelTal) - steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaTal = (parseFloat(tal) - steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setTal(nyaTal);
+        }
+    };
+
+    const ökaMedTiondel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.1).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.1).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedTiondel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.1).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.1).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const ökaMedHundradel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.01).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.01).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedHundradel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.01).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.01).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const ökaMedTusendel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.001).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.001).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedTusendel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.001).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.001).toFixed(3);
+            setTal(nyaTal);
         }
     };
 
@@ -205,7 +286,7 @@ const Avrundningshjalpmedel = () => {
                             type="number"
                             value={spellaege ? spelTal : tal}
                             onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
-                            className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all"
+                            className="rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
                             disabled={spellaege}
                         />
                     </div>
@@ -241,6 +322,68 @@ const Avrundningshjalpmedel = () => {
                         className="w-full h-[150px] rounded-xl"
                         style={{ touchAction: 'manipulation' }}
                     />
+                    
+                    <div className="grid grid-cols-1 gap-4 mt-4">
+                        <div className="flex justify-center items-center p-2 bg-blue-50 rounded-xl border border-blue-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedTiondel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                            </Button>
+                            <span className="text-sm font-medium text-blue-700 mx-2">Justera tiondel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedTiondel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                            </Button>
+                        </div>
+                        
+                        <div className="flex justify-center items-center p-2 bg-indigo-50 rounded-xl border border-indigo-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedHundradel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                            </Button>
+                            <span className="text-sm font-medium text-indigo-700 mx-2">Justera hundradel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedHundradel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                            </Button>
+                        </div>
+                        
+                        <div className="flex justify-center items-center p-2 bg-purple-50 rounded-xl border border-purple-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedTusendel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                            </Button>
+                            <span className="text-sm font-medium text-purple-700 mx-2">Justera tusendel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedTusendel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                            </Button>
+                        </div>
+                    </div>
                 </motion.div>
 
                 <div className="flex flex-col gap-6">
@@ -271,7 +414,7 @@ const Avrundningshjalpmedel = () => {
                             variant="outline"
                             className="w-full sm:w-auto rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-all duration-300"
                         >
-                            {spellaege ? "Avsluta spel" : "Starta övningsläge"}
+                            {spellaege ? "Avsluta övningsläge" : "Starta övningsläge"}
                         </Button>
                     </div>
 
