@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
+import { Slider } from '@/components/ui/slider';
 
 const Avrundningshjalpmedel = () => {
     const [tal, setTal] = useState<string>('0');
@@ -193,6 +194,26 @@ const Avrundningshjalpmedel = () => {
         }
     };
 
+    const ökaMedTusendel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.001).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.001).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedTusendel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.001).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.001).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
     return (
         <motion.div 
             initial={{ opacity: 0 }}
@@ -281,6 +302,26 @@ const Avrundningshjalpmedel = () => {
                         className="w-full h-[150px] rounded-xl"
                         style={{ touchAction: 'manipulation' }}
                     />
+                    
+                    <div className="flex justify-center items-center mt-2 space-x-4">
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={minskaMedTusendel}
+                            className="px-3 py-1 h-8 text-xs rounded-xl hover:bg-blue-50"
+                        >
+                            <Minus className="h-3 w-3 mr-1" /> 0.001
+                        </Button>
+                        <span className="text-sm font-medium text-gray-600">Justera med tusendel</span>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={ökaMedTusendel}
+                            className="px-3 py-1 h-8 text-xs rounded-xl hover:bg-blue-50"
+                        >
+                            <Plus className="h-3 w-3 mr-1" /> 0.001
+                        </Button>
+                    </div>
                 </motion.div>
 
                 <div className="flex flex-col gap-6">
