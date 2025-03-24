@@ -1,308 +1,237 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Label } from '@/components/ui/label';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Slider } from "@/components/ui/slider"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "@/components/ui/use-toast"
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Avrundningshjalpmedel = () => {
-    const [tal, setTal] = useState<string>('0');
-    const [avrundningstyp, setAvrundningstyp] = useState<string>('Heltal');
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [elevSvar, setElevSvar] = useState<string>('');
-    const [feedback, setFeedback] = useState<string>('');
-    const [antalFel, setAntalFel] = useState<number>(0);
-    const [spellaege, setSpellaege] = useState<boolean>(false);
-    const [spelTal, setSpelTal] = useState<string>('');
+  const [numberToRound, setNumberToRound] = useState<number | null>(null);
+  const [decimalPlaces, setDecimalPlaces] = useState<number>(0);
+  const [roundedNumber, setRoundedNumber] = useState<number | null>(null);
+  const [gameMode, setGameMode] = useState<boolean>(false);
+  const [gameNumber, setGameNumber] = useState<number | null>(null);
+  const [gameDecimalPlaces, setGameDecimalPlaces] = useState<number>(0);
+  const [userGuess, setUserGuess] = useState<string>('');
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [tallinjeValue, setTallinjeValue] = useState<number>(0);
+	const [animationTrigger, setAnimationTrigger] = useState(false);
 
-    useEffect(() => {
-        const visaTallinje = () => {
-            try {
-                const talNummer = spellaege ? parseFloat(spelTal) : parseFloat(tal);
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) return;
+  const roundNumber = useCallback(() => {
+    if (numberToRound === null) return;
+    const multiplier = Math.pow(10, decimalPlaces);
+    const rounded = Math.round(numberToRound * multiplier) / multiplier;
+    setRoundedNumber(rounded);
+		setTallinjeValue(rounded);
+		setAnimationTrigger(true);
+  }, [numberToRound, decimalPlaces]);
 
-                let minVarde: number;
-                let maxVarde: number;
-                let tickSpacing: number;
-                let tickFormat: (val: number) => string;
-                let litenTickSpacing: number;
+  useEffect(() => {
+    if (numberToRound !== null) {
+      roundNumber();
+    }
+  }, [numberToRound, decimalPlaces, roundNumber]);
 
-                if (avrundningstyp === "Heltal") {
-                    minVarde = Math.floor(talNummer) - 2;
-                    maxVarde = Math.ceil(talNummer) + 2;
-                    tickSpacing = 1;
-                    tickFormat = (val) => val.toString();
-                    litenTickSpacing = 0.1;
-                } else if (avrundningstyp === "Tiondelar") {
-                    minVarde = Math.floor(talNummer * 10) / 10 - 1;
-                    maxVarde = Math.ceil(talNummer * 10) / 10 + 1;
-                    tickSpacing = 0.1;
-                    tickFormat = (val) => val.toFixed(1);
-                    litenTickSpacing = 0.01;
-                } else {
-                    minVarde = Math.floor(talNummer * 100) / 100 - 0.1;
-                    maxVarde = Math.ceil(talNummer * 100) / 100 + 0.1;
-                    tickSpacing = 0.01;
-                    tickFormat = (val) => val.toFixed(2);
-                    litenTickSpacing = 0.001;
-                }
+  const startGameMode = () => {
+    const newNumber = Math.random() * 100; // Slumpmässigt tal mellan 0 och 100
+    const newDecimalPlaces = Math.floor(Math.random() * 3); // Slumpmässigt antal decimaler mellan 0 och 2
+    setGameNumber(newNumber);
+    setGameDecimalPlaces(newDecimalPlaces);
+    setRoundedNumber(null);
+    setUserGuess('');
+    setIsCorrect(null);
+    setGameMode(true);
+  };
 
-                canvas.width = canvas.parentElement?.offsetWidth || 800;
-                canvas.height = 150;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.beginPath();
-                ctx.moveTo(0, canvas.height / 2);
-                ctx.lineTo(canvas.width, canvas.height / 2);
-                ctx.strokeStyle = 'black';
-                ctx.lineWidth = 2;
-                ctx.stroke();
+  const checkGuess = () => {
+    if (gameNumber === null) return;
+    const multiplier = Math.pow(10, gameDecimalPlaces);
+    const correctRoundedNumber = Math.round(gameNumber * multiplier) / multiplier;
+    const userGuessNumber = Number(userGuess);
 
-                const totalSpan = maxVarde - minVarde;
-                const canvasWidth = canvas.width;
-                const canvasTickSpacing = canvasWidth / totalSpan * tickSpacing;
+    if (!isNaN(userGuessNumber) && userGuessNumber === correctRoundedNumber) {
+      setIsCorrect(true);
+      toast({
+        title: "Rätt!",
+        description: "Bra jobbat! Du gissade rätt.",
+      })
+    } else {
+      setIsCorrect(false);
+      toast({
+        variant: "destructive",
+        title: "Fel!",
+        description: `Försök igen. Rätt svar är ${correctRoundedNumber}`,
+      })
+    }
+  };
 
-                for (let i = minVarde; i <= maxVarde; i += tickSpacing) {
-                    const x = (i - minVarde) * (canvasWidth / totalSpan);
-                    ctx.beginPath();
-                    ctx.moveTo(x, canvas.height / 2 - 10);
-                    ctx.lineTo(x, canvas.height / 2 + 10);
-                    ctx.strokeStyle = 'black';
-                    ctx.stroke();
-                    ctx.font = '12px SF Pro Display, system-ui, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(tickFormat(i), x, canvas.height / 2 + 25);
-                }
+  const exitGameMode = () => {
+    setGameMode(false);
+    setGameNumber(null);
+    setGameDecimalPlaces(0);
+    setUserGuess('');
+    setIsCorrect(null);
+  };
 
-                // Rita de små ticksen
-                const canvasLitenTickSpacing = canvasWidth / totalSpan * litenTickSpacing;
-                for (let i = minVarde; i <= maxVarde; i += litenTickSpacing) {
-                    const x = (i - minVarde) * (canvasWidth / totalSpan);
-                    ctx.beginPath();
-                    ctx.moveTo(x, canvas.height / 2 - 5);
-                    ctx.lineTo(x, canvas.height / 2 + 5);
-                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
-                    ctx.stroke();
-                }
+  const handleSliderChange = (value: number[]) => {
+    setTallinjeValue(value[0]);
+  };
 
-                // Markera talet
-                const talX = (talNummer - minVarde) * (canvasWidth / totalSpan);
-                ctx.beginPath();
-                ctx.arc(talX, canvas.height / 2, 6, 0, 2 * Math.PI);
-                ctx.fillStyle = '#0070f3';
-                ctx.fill();
-                ctx.font = 'bold 14px SF Pro Display, system-ui, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillStyle = '#0070f3';
-                ctx.fillText(talNummer.toString(), talX, canvas.height / 2 - 20);
+  return (
+    <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="max-w-2xl w-full bg-white rounded-lg shadow-md p-6 mt-12"
+      >
+        <h1 className="text-2xl font-semibold text-center text-gray-800 mb-6">
+          Avrundningshjälpmedel
+        </h1>
 
-            } catch (error) {
-                console.error("Error in visaTallinje:", error);
-            }
-        };
+        {!gameMode ? (
+          <>
+            <div className="mb-4">
+              <Label htmlFor="numberToRound" className="block text-gray-700 text-sm font-bold mb-2">
+                Ange ett tal att avrunda:
+              </Label>
+              <Input
+                type="number"
+                id="numberToRound"
+                placeholder="T.ex. 3.14159"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                onChange={(e) => setNumberToRound(Number(e.target.value))}
+              />
+            </div>
 
-        visaTallinje();
-    }, [tal, avrundningstyp, spellaege, spelTal]);
+            <div className="mb-6">
+              <Label htmlFor="decimalPlaces" className="block text-gray-700 text-sm font-bold mb-2">
+                Antal decimaler:
+              </Label>
+              <div className="flex items-center space-x-4">
+                <ArrowLeft className="w-5 h-5 text-gray-500" />
+                <Slider
+                  id="decimalPlaces"
+                  defaultValue={[0]}
+                  max={5}
+                  step={1}
+                  className="w-full"
+                  onValueChange={(value) => setDecimalPlaces(value[0])}
+                />
+                <ArrowRight className="w-5 h-5 text-gray-500" />
+                <span className="text-gray-700">{decimalPlaces}</span>
+              </div>
+            </div>
 
-    const hanteraSvar = () => {
-        const talNummer = spellaege ? parseFloat(spelTal) : parseFloat(tal);
-        const elevSvarNummer = parseFloat(elevSvar);
-        let korrektSvar: number;
+            {roundedNumber !== null && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2, ease: "easeOut" }}
+                className="mb-6"
+              >
+                <p className="text-gray-700">
+                  Avrundat tal: <span className="font-semibold">{roundedNumber}</span>
+                </p>
+              </motion.div>
+            )}
 
-        if (avrundningstyp === "Heltal") {
-            korrektSvar = Math.round(talNummer);
-        } else if (avrundningstyp === "Tiondelar") {
-            korrektSvar = Math.round(talNummer * 10) / 10;
-        } else {
-            korrektSvar = Math.round(talNummer * 100) / 100;
-        }
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.6, delay: 0.4 }}
+							className="mb-6"
+						>
+							<Label className="block text-gray-700 text-sm font-bold mb-2">
+								Tallinje:
+							</Label>
+							<Slider
+								defaultValue={[numberToRound || 0]}
+								min={(numberToRound || 0) - 1}
+								max={(numberToRound || 0) + 1}
+								step={0.1}
+								onValueChange={(value) => handleSliderChange(value)}
+								aria-label="Tallinje"
+							/>
+							<p className="text-gray-700 mt-2">
+								Valt värde: {tallinjeValue}
+							</p>
+						</motion.div>
 
-        if (elevSvarNummer === korrektSvar) {
-            setFeedback(`Rätt svar! ${talNummer} avrundat till ${avrundningstyp.toLowerCase()} är ${korrektSvar}.`);
-            setAntalFel(0);
-            setElevSvar('');
-            if (spellaege) {
-                generateRandomNumber();
-            }
-        } else {
-            setAntalFel(prevAntalFel => prevAntalFel + 1);
-            if (antalFel >= 2) {
-                setFeedback(`Fel svar. Rätt svar är ${korrektSvar}.`);
-                setAntalFel(0);
-                setElevSvar('');
-            } else {
-                setFeedback('Fel svar. Försök igen!');
-                setElevSvar('');
-            }
-        }
-    };
-
-    const generateRandomNumber = () => {
-        if (avrundningstyp === "Hundradelar") {
-            // Generate a number with 3 decimal places when rounding to hundredths
-            const randomNum = (Math.random() * 10).toFixed(3);
-            setSpelTal(randomNum);
-        } else {
-            // For other rounding types, keep the existing behavior (2 decimal places)
-            setSpelTal((Math.random() * 10).toFixed(2));
-        }
-    };
-
-    // Update the number when avrundningstyp changes in game mode
-    useEffect(() => {
-        if (spellaege) {
-            generateRandomNumber();
-        }
-    }, [avrundningstyp, spellaege]);
-
-    const startaSpel = () => {
-        if (!spellaege) {
-            setSpellaege(true);
-            generateRandomNumber();
-            setFeedback('');
-            setElevSvar('');
-            setAntalFel(0);
-        } else {
-            setSpellaege(false);
-            setFeedback('');
-            setElevSvar('');
-            setAntalFel(0);
-        }
-    };
-
-    return (
-        <motion.div 
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full bg-green-500 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                  Starta övningsläge
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Är du säker?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    När du startar övningsläget kommer du att få slumpmässiga tal att avrunda.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                  <AlertDialogAction onClick={startGameMode}>Starta</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
+        ) : (
+          <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="max-w-4xl mx-auto p-8 space-y-8"
-        >
-            <motion.h1 
-                initial={{ y: -20 }}
-                animate={{ y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800"
+            className="space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-center text-gray-800">
+              Övningsläge
+            </h2>
+            <p className="text-gray-700">
+              Avrunda <span className="font-semibold">{gameNumber?.toFixed(5)}</span> till{' '}
+              <span className="font-semibold">{gameDecimalPlaces}</span> decimaler:
+            </p>
+            <Input
+              type="number"
+              placeholder="Ditt svar"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              value={userGuess}
+              onChange={(e) => setUserGuess(e.target.value)}
+            />
+            <Button onClick={checkGuess} className="w-full">
+              Kontrollera svar
+            </Button>
+            {isCorrect !== null && (
+              <p className={isCorrect ? 'text-green-500' : 'text-red-500'}>
+                {isCorrect ? 'Rätt!' : 'Fel. Försök igen.'}
+              </p>
+            )}
+            <Button 
+              variant="destructive"
+              onClick={exitGameMode}
+              className="mt-4"
             >
-                Träna på att avrunda tal
-            </motion.h1>
-            
-            <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-100"
-            >
-                <div className="flex flex-col sm:flex-row gap-6 items-center mb-6">
-                    <div className="flex flex-col space-y-2 w-full sm:w-1/2">
-                        <Label htmlFor="tal" className="text-sm font-medium text-gray-700">
-                            {spellaege ? "Övningstal:" : "Ange ett tal:"}
-                        </Label>
-                        <Input
-                            id="tal"
-                            type="number"
-                            value={spellaege ? spelTal : tal}
-                            onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
-                            className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all"
-                            disabled={spellaege}
-                        />
-                    </div>
-                    
-                    <div className="flex flex-col space-y-2 w-full sm:w-1/2">
-                        <Label htmlFor="avrundningstyp" className="text-sm font-medium text-gray-700">
-                            Avrunda till:
-                        </Label>
-                        <Select
-                            value={avrundningstyp}
-                            onValueChange={setAvrundningstyp}
-                        >
-                            <SelectTrigger className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all">
-                                <SelectValue placeholder="Välj avrundningstyp" />
-                            </SelectTrigger>
-                            <SelectContent className="rounded-xl shadow-lg border-gray-100 bg-white/95 backdrop-blur-md">
-                                <SelectItem value="Heltal">Heltal</SelectItem>
-                                <SelectItem value="Tiondelar">Tiondelar</SelectItem>
-                                <SelectItem value="Hundradelar">Hundradelar</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                <motion.div 
-                    initial={{ scale: 0.95, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="w-full overflow-x-auto bg-gray-50 rounded-2xl p-3 border border-gray-100 mb-6"
-                >
-                    <canvas
-                        ref={canvasRef}
-                        className="w-full h-[150px] rounded-xl"
-                        style={{ touchAction: 'manipulation' }}
-                    />
-                </motion.div>
-
-                <div className="flex flex-col gap-6">
-                    <div className="flex flex-col sm:flex-row gap-4 items-end">
-                        <div className="flex flex-col space-y-2 w-full sm:w-1/3">
-                            <Label htmlFor="elevsvar" className="text-sm font-medium text-gray-700">
-                                Ditt svar:
-                            </Label>
-                            <Input
-                                id="elevsvar"
-                                type="number"
-                                value={elevSvar}
-                                onChange={(e) => setElevSvar(e.target.value)}
-                                className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all"
-                                placeholder="Skriv ditt svar här"
-                            />
-                        </div>
-                        
-                        <Button 
-                            onClick={hanteraSvar} 
-                            className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:shadow-lg transition-all duration-300 hover:translate-y-[-2px]"
-                        >
-                            Kontrollera svar
-                        </Button>
-                        
-                        <Button 
-                            onClick={startaSpel} 
-                            variant="outline"
-                            className="w-full sm:w-auto rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-all duration-300"
-                        >
-                            {spellaege ? "Avsluta spel" : "Starta övningsläge"}
-                        </Button>
-                    </div>
-
-                    {feedback && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className={cn(
-                                "p-4 rounded-xl text-center font-medium shadow-sm",
-                                feedback.includes("Rätt") 
-                                    ? "bg-green-50 text-green-800 border border-green-100" 
-                                    : "bg-red-50 text-red-800 border border-red-100"
-                            )}
-                        >
-                            {feedback}
-                        </motion.div>
-                    )}
-                </div>
-            </motion.div>
-            
-            <motion.p 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.8 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="text-sm text-center text-gray-500 italic"
-            >
-                Använd tallinjen för att visualisera avrundningen.
-            </motion.p>
-        </motion.div>
-    );
+              Avsluta övningsläge
+            </Button>
+          </motion.div>
+        )}
+      </motion.div>
+    </div>
+  );
 };
 
 export default Avrundningshjalpmedel;
