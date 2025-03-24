@@ -68,6 +68,15 @@ const Index = () => {
             <p className="text-gray-600">Övningsläge som ger dig direkt feedback på dina svar med slumpmässiga tal.</p>
           </div>
         </motion.div>
+        
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          className="text-gray-500 mt-8 text-sm"
+        >
+          Skapat av Erik Bjurström
+        </motion.p>
       </motion.div>
     </div>
   );
