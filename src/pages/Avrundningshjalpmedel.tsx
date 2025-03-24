@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { Plus, Minus } from "lucide-react";
 
 const Avrundningshjalpmedel = () => {
     const [tal, setTal] = useState<string>('0');
@@ -77,7 +78,6 @@ const Avrundningshjalpmedel = () => {
                     ctx.fillText(tickFormat(i), x, canvas.height / 2 + 25);
                 }
 
-                // Rita de små ticksen
                 const canvasLitenTickSpacing = canvasWidth / totalSpan * litenTickSpacing;
                 for (let i = minVarde; i <= maxVarde; i += litenTickSpacing) {
                     const x = (i - minVarde) * (canvasWidth / totalSpan);
@@ -88,7 +88,6 @@ const Avrundningshjalpmedel = () => {
                     ctx.stroke();
                 }
 
-                // Markera talet
                 const talX = (talNummer - minVarde) * (canvasWidth / totalSpan);
                 ctx.beginPath();
                 ctx.arc(talX, canvas.height / 2, 6, 0, 2 * Math.PI);
@@ -142,16 +141,13 @@ const Avrundningshjalpmedel = () => {
 
     const generateRandomNumber = () => {
         if (avrundningstyp === "Hundradelar") {
-            // Generate a number with 3 decimal places when rounding to hundredths
             const randomNum = (Math.random() * 10).toFixed(3);
             setSpelTal(randomNum);
         } else {
-            // For other rounding types, keep the existing behavior (2 decimal places)
             setSpelTal((Math.random() * 10).toFixed(2));
         }
     };
 
-    // Update the number when avrundningstyp changes in game mode
     useEffect(() => {
         if (spellaege) {
             generateRandomNumber();
@@ -170,6 +166,30 @@ const Avrundningshjalpmedel = () => {
             setFeedback('');
             setElevSvar('');
             setAntalFel(0);
+        }
+    };
+
+    const ökaVärde = () => {
+        if (spellaege) {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaSpelTal = (parseFloat(spelTal) + steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaTal = (parseFloat(tal) + steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaVärde = () => {
+        if (spellaege) {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaSpelTal = (parseFloat(spelTal) - steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const steg = avrundningstyp === "Heltal" ? 1 : avrundningstyp === "Tiondelar" ? 0.1 : 0.01;
+            const nyaTal = (parseFloat(tal) - steg).toFixed(avrundningstyp === "Heltal" ? 0 : avrundningstyp === "Tiondelar" ? 1 : 2);
+            setTal(nyaTal);
         }
     };
 
@@ -200,14 +220,34 @@ const Avrundningshjalpmedel = () => {
                         <Label htmlFor="tal" className="text-sm font-medium text-gray-700">
                             {spellaege ? "Övningstal:" : "Ange ett tal:"}
                         </Label>
-                        <Input
-                            id="tal"
-                            type="number"
-                            value={spellaege ? spelTal : tal}
-                            onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
-                            className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-500 transition-all"
-                            disabled={spellaege}
-                        />
+                        <div className="flex items-center">
+                            <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={minskaVärde}
+                                className="rounded-r-none border-r-0"
+                                aria-label="Minska värde"
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
+                            <Input
+                                id="tal"
+                                type="number"
+                                value={spellaege ? spelTal : tal}
+                                onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
+                                className="rounded-none border-x-0 focus:ring-2 focus:ring-blue-500 transition-all"
+                                disabled={spellaege}
+                            />
+                            <Button 
+                                variant="outline" 
+                                size="icon" 
+                                onClick={ökaVärde}
+                                className="rounded-l-none border-l-0"
+                                aria-label="Öka värde"
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
                     </div>
                     
                     <div className="flex flex-col space-y-2 w-full sm:w-1/2">
@@ -271,7 +311,7 @@ const Avrundningshjalpmedel = () => {
                             variant="outline"
                             className="w-full sm:w-auto rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-all duration-300"
                         >
-                            {spellaege ? "Avsluta spel" : "Starta övningsläge"}
+                            {spellaege ? "Avsluta övningsläge" : "Starta övningsläge"}
                         </Button>
                     </div>
 
