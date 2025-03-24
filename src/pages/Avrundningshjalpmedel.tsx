@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -303,23 +304,23 @@ const Avrundningshjalpmedel = () => {
                         style={{ touchAction: 'manipulation' }}
                     />
                     
-                    <div className="flex justify-center items-center mt-2 space-x-4">
+                    <div className="flex justify-center items-center mt-4 p-2 bg-blue-50 rounded-xl border border-blue-100">
                         <Button 
-                            variant="outline" 
+                            variant="secondary" 
                             size="sm" 
                             onClick={minskaMedTusendel}
-                            className="px-3 py-1 h-8 text-xs rounded-xl hover:bg-blue-50"
+                            className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
                         >
-                            <Minus className="h-3 w-3 mr-1" /> 0.001
+                            <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.001
                         </Button>
-                        <span className="text-sm font-medium text-gray-600">Justera med tusendel</span>
+                        <span className="text-sm font-medium text-blue-700 mx-2">Justera med tusendel</span>
                         <Button 
-                            variant="outline" 
+                            variant="secondary" 
                             size="sm" 
                             onClick={ökaMedTusendel}
-                            className="px-3 py-1 h-8 text-xs rounded-xl hover:bg-blue-50"
+                            className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
                         >
-                            <Plus className="h-3 w-3 mr-1" /> 0.001
+                            <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.001
                         </Button>
                     </div>
                 </motion.div>
