@@ -333,7 +333,7 @@ const Avrundningshjalpmedel = () => {
                             >
                                 <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
                             </Button>
-                            <span className="text-sm font-medium text-blue-700 mx-2">Justera med tiondel</span>
+                            <span className="text-sm font-medium text-blue-700 mx-2">Justera tiondel</span>
                             <Button 
                                 variant="secondary" 
                                 size="sm" 
@@ -353,7 +353,7 @@ const Avrundningshjalpmedel = () => {
                             >
                                 <Minus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
                             </Button>
-                            <span className="text-sm font-medium text-indigo-700 mx-2">Justera med hundradel</span>
+                            <span className="text-sm font-medium text-indigo-700 mx-2">Justera hundradel</span>
                             <Button 
                                 variant="secondary" 
                                 size="sm" 
@@ -373,7 +373,7 @@ const Avrundningshjalpmedel = () => {
                             >
                                 <Minus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
                             </Button>
-                            <span className="text-sm font-medium text-purple-700 mx-2">Justera med tusendel</span>
+                            <span className="text-sm font-medium text-purple-700 mx-2">Justera tusendel</span>
                             <Button 
                                 variant="secondary" 
                                 size="sm" 
