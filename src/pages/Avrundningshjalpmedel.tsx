@@ -28,15 +28,15 @@ const Avrundningshjalpmedel = () => {
   const [userGuess, setUserGuess] = useState<string>('');
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [tallinjeValue, setTallinjeValue] = useState<number>(0);
-	const [animationTrigger, setAnimationTrigger] = useState(false);
+  const [animationTrigger, setAnimationTrigger] = useState(false);
 
   const roundNumber = useCallback(() => {
     if (numberToRound === null) return;
     const multiplier = Math.pow(10, decimalPlaces);
     const rounded = Math.round(numberToRound * multiplier) / multiplier;
     setRoundedNumber(rounded);
-		setTallinjeValue(rounded);
-		setAnimationTrigger(true);
+    setTallinjeValue(rounded);
+    setAnimationTrigger(true);
   }, [numberToRound, decimalPlaces]);
 
   useEffect(() => {
@@ -149,27 +149,27 @@ const Avrundningshjalpmedel = () => {
               </motion.div>
             )}
 
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ duration: 0.6, delay: 0.4 }}
-							className="mb-6"
-						>
-							<Label className="block text-gray-700 text-sm font-bold mb-2">
-								Tallinje:
-							</Label>
-							<Slider
-								defaultValue={[numberToRound || 0]}
-								min={(numberToRound || 0) - 1}
-								max={(numberToRound || 0) + 1}
-								step={0.1}
-								onValueChange={(value) => handleSliderChange(value)}
-								aria-label="Tallinje"
-							/>
-							<p className="text-gray-700 mt-2">
-								Valt värde: {tallinjeValue}
-							</p>
-						</motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mb-6"
+            >
+              <Label className="block text-gray-700 text-sm font-bold mb-2">
+                Tallinje:
+              </Label>
+              <Slider
+                defaultValue={[numberToRound || 0]}
+                min={(numberToRound || 0) - 1}
+                max={(numberToRound || 0) + 1}
+                step={0.1}
+                onValueChange={(value) => handleSliderChange(value)}
+                aria-label="Tallinje"
+              />
+              <p className="text-gray-700 mt-2">
+                Valt värde: {tallinjeValue}
+              </p>
+            </motion.div>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
