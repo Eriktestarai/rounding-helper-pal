@@ -194,6 +194,46 @@ const Avrundningshjalpmedel = () => {
         }
     };
 
+    const ökaMedTiondel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.1).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.1).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedTiondel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.1).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.1).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const ökaMedHundradel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) + 0.01).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) + 0.01).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
+    const minskaMedHundradel = () => {
+        if (spellaege) {
+            const nyaSpelTal = (parseFloat(spelTal) - 0.01).toFixed(3);
+            setSpelTal(nyaSpelTal);
+        } else {
+            const nyaTal = (parseFloat(tal) - 0.01).toFixed(3);
+            setTal(nyaTal);
+        }
+    };
+
     const ökaMedTusendel = () => {
         if (spellaege) {
             const nyaSpelTal = (parseFloat(spelTal) + 0.001).toFixed(3);
@@ -283,24 +323,66 @@ const Avrundningshjalpmedel = () => {
                         style={{ touchAction: 'manipulation' }}
                     />
                     
-                    <div className="flex justify-center items-center mt-4 p-2 bg-blue-50 rounded-xl border border-blue-100">
-                        <Button 
-                            variant="secondary" 
-                            size="sm" 
-                            onClick={minskaMedTusendel}
-                            className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
-                        >
-                            <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.001
-                        </Button>
-                        <span className="text-sm font-medium text-blue-700 mx-2">Justera med tusendel</span>
-                        <Button 
-                            variant="secondary" 
-                            size="sm" 
-                            onClick={ökaMedTusendel}
-                            className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
-                        >
-                            <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.001
-                        </Button>
+                    <div className="grid grid-cols-1 gap-4 mt-4">
+                        <div className="flex justify-center items-center p-2 bg-blue-50 rounded-xl border border-blue-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedTiondel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                            </Button>
+                            <span className="text-sm font-medium text-blue-700 mx-2">Justera med tiondel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedTiondel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                            </Button>
+                        </div>
+                        
+                        <div className="flex justify-center items-center p-2 bg-indigo-50 rounded-xl border border-indigo-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedHundradel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                            </Button>
+                            <span className="text-sm font-medium text-indigo-700 mx-2">Justera med hundradel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedHundradel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                            </Button>
+                        </div>
+                        
+                        <div className="flex justify-center items-center p-2 bg-purple-50 rounded-xl border border-purple-100">
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={minskaMedTusendel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm mr-3"
+                            >
+                                <Minus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                            </Button>
+                            <span className="text-sm font-medium text-purple-700 mx-2">Justera med tusendel</span>
+                            <Button 
+                                variant="secondary" 
+                                size="sm" 
+                                onClick={ökaMedTusendel}
+                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm ml-3"
+                            >
+                                <Plus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                            </Button>
+                        </div>
                     </div>
                 </motion.div>
 
