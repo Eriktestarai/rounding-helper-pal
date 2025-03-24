@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -242,34 +241,14 @@ const Avrundningshjalpmedel = () => {
                         <Label htmlFor="tal" className="text-sm font-medium text-gray-700">
                             {spellaege ? "Övningstal:" : "Ange ett tal:"}
                         </Label>
-                        <div className="flex items-center">
-                            <Button 
-                                variant="outline" 
-                                size="icon" 
-                                onClick={minskaVärde}
-                                className="rounded-r-none border-r-0"
-                                aria-label="Minska värde"
-                            >
-                                <Minus className="h-4 w-4" />
-                            </Button>
-                            <Input
-                                id="tal"
-                                type="number"
-                                value={spellaege ? spelTal : tal}
-                                onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
-                                className="rounded-none border-x-0 focus:ring-2 focus:ring-blue-500 transition-all"
-                                disabled={spellaege}
-                            />
-                            <Button 
-                                variant="outline" 
-                                size="icon" 
-                                onClick={ökaVärde}
-                                className="rounded-l-none border-l-0"
-                                aria-label="Öka värde"
-                            >
-                                <Plus className="h-4 w-4" />
-                            </Button>
-                        </div>
+                        <Input
+                            id="tal"
+                            type="number"
+                            value={spellaege ? spelTal : tal}
+                            onChange={(e) => spellaege ? setSpelTal(e.target.value) : setTal(e.target.value)}
+                            className="rounded-xl focus:ring-2 focus:ring-blue-500 transition-all"
+                            disabled={spellaege}
+                        />
                     </div>
                     
                     <div className="flex flex-col space-y-2 w-full sm:w-1/2">
