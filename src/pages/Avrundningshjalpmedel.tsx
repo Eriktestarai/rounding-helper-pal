@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { Slider } from '@/components/ui/slider';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const Avrundningshjalpmedel = () => {
     const [tal, setTal] = useState<string>('0');
@@ -17,6 +18,7 @@ const Avrundningshjalpmedel = () => {
     const [antalFel, setAntalFel] = useState<number>(0);
     const [spellaege, setSpellaege] = useState<boolean>(false);
     const [spelTal, setSpelTal] = useState<string>('');
+    const [isAdjustOpen, setIsAdjustOpen] = useState<boolean>(true);
 
     useEffect(() => {
         const visaTallinje = () => {
@@ -323,67 +325,83 @@ const Avrundningshjalpmedel = () => {
                         style={{ touchAction: 'manipulation' }}
                     />
                     
-                    <div className="grid grid-cols-1 gap-4 mt-4">
-                        <div className="flex justify-center items-center p-2 bg-blue-50 rounded-xl border border-blue-100">
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={minskaMedTiondel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
-                            >
-                                <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
-                            </Button>
-                            <span className="text-sm font-medium text-blue-700 mx-2">Justera tiondel</span>
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={ökaMedTiondel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
-                            >
-                                <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
-                            </Button>
-                        </div>
+                    <Collapsible 
+                        open={isAdjustOpen} 
+                        onOpenChange={setIsAdjustOpen}
+                        className="mt-4"
+                    >
+                        <CollapsibleTrigger className="flex items-center justify-center w-full p-2 bg-blue-50 rounded-xl border border-blue-100 mb-2 hover:bg-blue-100 transition-colors">
+                            <span className="text-sm font-medium text-blue-700 mr-2">
+                                {isAdjustOpen ? "Dölj justeringskontroller" : "Visa justeringskontroller"}
+                            </span>
+                            {isAdjustOpen ? 
+                                <ChevronUp className="h-4 w-4 text-blue-600" /> : 
+                                <ChevronDown className="h-4 w-4 text-blue-600" />
+                            }
+                        </CollapsibleTrigger>
                         
-                        <div className="flex justify-center items-center p-2 bg-indigo-50 rounded-xl border border-indigo-100">
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={minskaMedHundradel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm mr-3"
-                            >
-                                <Minus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
-                            </Button>
-                            <span className="text-sm font-medium text-indigo-700 mx-2">Justera hundradel</span>
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={ökaMedHundradel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm ml-3"
-                            >
-                                <Plus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
-                            </Button>
-                        </div>
-                        
-                        <div className="flex justify-center items-center p-2 bg-purple-50 rounded-xl border border-purple-100">
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={minskaMedTusendel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm mr-3"
-                            >
-                                <Minus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
-                            </Button>
-                            <span className="text-sm font-medium text-purple-700 mx-2">Justera tusendel</span>
-                            <Button 
-                                variant="secondary" 
-                                size="sm" 
-                                onClick={ökaMedTusendel}
-                                className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm ml-3"
-                            >
-                                <Plus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
-                            </Button>
-                        </div>
-                    </div>
+                        <CollapsibleContent className="space-y-4">
+                            <div className="flex justify-center items-center p-2 bg-blue-50 rounded-xl border border-blue-100">
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={minskaMedTiondel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm mr-3"
+                                >
+                                    <Minus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                                </Button>
+                                <span className="text-sm font-medium text-blue-700 mx-2">Justera tiondel</span>
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={ökaMedTiondel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-blue-200 hover:bg-blue-100 shadow-sm ml-3"
+                                >
+                                    <Plus className="h-4 w-4 mr-2 text-blue-600" /> 0.1
+                                </Button>
+                            </div>
+                            
+                            <div className="flex justify-center items-center p-2 bg-indigo-50 rounded-xl border border-indigo-100">
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={minskaMedHundradel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm mr-3"
+                                >
+                                    <Minus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                                </Button>
+                                <span className="text-sm font-medium text-indigo-700 mx-2">Justera hundradel</span>
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={ökaMedHundradel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-indigo-200 hover:bg-indigo-100 shadow-sm ml-3"
+                                >
+                                    <Plus className="h-4 w-4 mr-2 text-indigo-600" /> 0.01
+                                </Button>
+                            </div>
+                            
+                            <div className="flex justify-center items-center p-2 bg-purple-50 rounded-xl border border-purple-100">
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={minskaMedTusendel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm mr-3"
+                                >
+                                    <Minus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                                </Button>
+                                <span className="text-sm font-medium text-purple-700 mx-2">Justera tusendel</span>
+                                <Button 
+                                    variant="secondary" 
+                                    size="sm" 
+                                    onClick={ökaMedTusendel}
+                                    className="px-4 py-2 h-10 text-sm rounded-xl bg-white border border-purple-200 hover:bg-purple-100 shadow-sm ml-3"
+                                >
+                                    <Plus className="h-4 w-4 mr-2 text-purple-600" /> 0.001
+                                </Button>
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
                 </motion.div>
 
                 <div className="flex flex-col gap-6">
